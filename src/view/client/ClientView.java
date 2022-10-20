@@ -3,6 +3,8 @@ import controller.ClientController;
 import model.Computer;
 import model.OrderFood;
 import view.Client;
+import view.socket.ClientSK;
+
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Scanner;
@@ -16,6 +18,8 @@ public class ClientView {
 
     private static ClientView clientView;
 
+    private final ClientSK clientSK = ClientSK.getInstance();
+
 
     private ClientView() throws IOException, ClassNotFoundException {
     }
@@ -27,7 +31,7 @@ public class ClientView {
         return clientView;
     }
 
-    public void login(int computerId) throws IOException, ClassNotFoundException {
+    public void login(int computerId) throws IOException, ClassNotFoundException, InterruptedException {
         var computer = clientController.findOneComputer(computerId);
         if (!Objects.isNull(computer) && Objects.isNull(computer.getPerson())) {
             System.out.println("Input username and password");
@@ -53,7 +57,7 @@ public class ClientView {
         }
     }
 
-    private void helloClient(Computer computer) throws IOException, ClassNotFoundException {
+    private void helloClient(Computer computer) throws IOException, ClassNotFoundException, InterruptedException {
         if (computer.getStatus() && computer.getPerson().getStatus()) {
             System.out.println("Welcome " + computer.getPerson().getName() + ", login at " + computer.getJDate().getHourOpenString());
             System.out.println("Money : " + computer.getPerson().getWallet());
@@ -90,7 +94,7 @@ public class ClientView {
         }
     }
 
-    private void orderFoods(OrderFood orderFood) throws IOException, ClassNotFoundException {
+    private void orderFoods(OrderFood orderFood) throws IOException, ClassNotFoundException, InterruptedException {
         var sizeFoods = clientController.getSizeFood();
         if (sizeFoods <= 0) {
             System.out.println("no food");
@@ -104,6 +108,7 @@ public class ClientView {
             if (choose == -1) {
                 helloClient(orderFood.getComputer());
             } else if (choose == -2) {
+                clientSK.write(orderFood.getComputer().getId(), orderFood.getComputer().getCode() + " : has a new order");
                 clientController.saveOrderFoods(orderFood);
                 System.out.println("order success");
                 helloClient(orderFood.getComputer());
@@ -116,7 +121,7 @@ public class ClientView {
         }
     }
 
-    private void choiceFood(int choose, OrderFood orderFood) throws IOException, ClassNotFoundException {
+    private void choiceFood(int choose, OrderFood orderFood) throws IOException, ClassNotFoundException, InterruptedException {
         var food = clientController.getOneFood(choose);
         System.out.println("you put " + food.getName());
         System.out.println("please input amount");
@@ -129,7 +134,7 @@ public class ClientView {
         orderFoods(orderFood);
     }
 
-    private void changePassword(Computer computer) throws IOException, ClassNotFoundException {
+    private void changePassword(Computer computer) throws IOException, ClassNotFoundException, InterruptedException {
         System.out.println("input old password");
         var oldPass = LINE.nextLine();
         if (oldPass.equals(computer.getPerson().getPassword())) {
@@ -144,7 +149,7 @@ public class ClientView {
         helloClient(computer);
     }
 
-    private void changeName(Computer computer) throws IOException, ClassNotFoundException {
+    private void changeName(Computer computer) throws IOException, ClassNotFoundException, InterruptedException {
         System.out.println("input a new name");
         var newName = LINE.nextLine();
         computer.getPerson().setName(newName);
@@ -153,12 +158,12 @@ public class ClientView {
         helloClient(computer);
     }
 
-    private void logout(Computer computer) throws IOException, ClassNotFoundException {
+    private void logout(Computer computer) throws IOException, ClassNotFoundException, InterruptedException {
         clientController.logout(computer);
         chooseComputer();
     }
 
-    public void chooseComputer() throws IOException, ClassNotFoundException {
+    public void chooseComputer() throws IOException, ClassNotFoundException, InterruptedException {
         if (clientController.isServer()) {
             var countComputer = clientController.countComputer();
             if (countComputer <= 0) {

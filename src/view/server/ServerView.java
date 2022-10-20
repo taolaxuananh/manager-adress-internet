@@ -3,6 +3,7 @@ package view.server;
 import controller.ServerController;
 import model.Person;
 import view.Server;
+import view.socket.ServerSK;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -17,6 +18,7 @@ public class ServerView {
     private final FoodAdminView FOOD_ADMIN_VIEW = FoodAdminView.getInstance();
     private final ClientAdminView CLIENT_ADMIN_VIEW = ClientAdminView.getInstance();
     private final OrderAdminView ORDER_ADMIN_VIEW = OrderAdminView.getInstance();
+    private final ServerSK serverSK = ServerSK.getInstance();
     private static ServerView serverView;
 
     public static ServerView getInstance() throws IOException, ClassNotFoundException {
@@ -54,6 +56,7 @@ public class ServerView {
         System.out.println("3. Food Manager");
         System.out.println("4. Client Manager");
         System.out.println("5. Order Manager");
+        System.out.println("6. Notification");
         System.out.println("-1. Back");
         System.out.println("-2. Logout");
         int choose = NUMBER.nextInt();
@@ -77,6 +80,8 @@ public class ServerView {
             case 5:
                 ORDER_ADMIN_VIEW.showAllOrder();
                 break;
+            case 6:
+                notification();
             case -1:
                 Server.main(new String[0]);
                 break;
@@ -88,6 +93,10 @@ public class ServerView {
                 Server.main(new String[0]);
                 break;
         }
+    }
+
+    private void notification() throws IOException, ClassNotFoundException {
+        serverSK.read();
     }
 
     private void logout() throws IOException, ClassNotFoundException {

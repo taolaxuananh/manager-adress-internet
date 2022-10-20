@@ -55,7 +55,7 @@ public class OrderFood implements Serializable {
             stringBuilder.append(key.getName()).append(" : ").append(value).append("\n");
             quantities[0] += (value * key.getPrice());
         });
-        stringBuilder.append("Bill: ").append(quantities[0]);
+        stringBuilder.append("Bill: ").append(quantities[0]).append("\n");
         return stringBuilder.toString();
     }
 }
